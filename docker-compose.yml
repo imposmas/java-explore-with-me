@@ -18,17 +18,17 @@ services:
 
   ewm-stats-server:
     build: ./ewm-stats/ewm-stats-server
-    restart: always
+    container_name: ewm-stats-server
     depends_on:
-      postgres-stats:
-        condition: service_healthy
+      - postgres-stats
     ports:
       - "9091:9091"
+    restart: always
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:9091/actuator/health || exit 1"]
-      interval: 5s
+      interval: 10s
       timeout: 3s
-      retries: 10
+      retries: 5
 
   ewm-stats-client:
     build: ./ewm-stats/ewm-stats-client
