@@ -10,22 +10,31 @@ services:
       POSTGRES_PASSWORD: stats
     ports:
       - "5432:5432"
-    volumes:
-      - postgres-stats-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stats -d stats"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   ewm-stats-server:
     build: ./ewm-stats/ewm-stats-server
+    restart: always
     depends_on:
-      - postgres-stats
+      postgres-stats:
+        condition: service_healthy
     ports:
       - "9091:9091"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9091/actuator/health || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
   ewm-stats-client:
     build: ./ewm-stats/ewm-stats-client
+    restart: always
     depends_on:
-      - ewm-stats-server
+      ewm-stats-server:
+        condition: service_healthy
     ports:
       - "9090:9090"
-
-volumes:
-  postgres-stats-data:
