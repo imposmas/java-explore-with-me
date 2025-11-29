@@ -9,16 +9,17 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import ru.practicum.stats.constants.FormatConstants;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static ru.practicum.stats.constants.FormatConstants.DATE_PATTERN;
+import static ru.practicum.stats.constants.FormatConstants.DATE_TIME_PATTERN;
+
 @Configuration
 public class JacksonConfig {
-
-    public static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
-    public static final String DATE_PATTERN = "yyyy-MM-dd";
 
     @Bean
     public ObjectMapper objectMapper() {

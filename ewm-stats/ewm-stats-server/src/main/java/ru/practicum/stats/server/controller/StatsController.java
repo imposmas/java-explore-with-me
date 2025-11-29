@@ -12,6 +12,8 @@ import ru.practicum.stats.server.service.StatsService;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static ru.practicum.stats.constants.FormatConstants.DATE_TIME_PATTERN;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -28,10 +30,10 @@ public class StatsController {
 
     @GetMapping("/stats")
     public List<ViewStatsDto> getStats(@RequestParam
-                                       @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                       @DateTimeFormat(pattern = DATE_TIME_PATTERN)
                                        LocalDateTime start,
                                        @RequestParam
-                                       @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                       @DateTimeFormat(pattern = DATE_TIME_PATTERN)
                                        LocalDateTime end,
                                        @RequestParam(required = false) List<String> uris,
                                        @RequestParam(defaultValue = "false") Boolean unique) {
