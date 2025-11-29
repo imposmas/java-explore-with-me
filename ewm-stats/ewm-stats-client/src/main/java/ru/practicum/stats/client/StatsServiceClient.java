@@ -1,9 +1,8 @@
-package ru.practicum.stats.client.client;
+package ru.practicum.stats.client;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import ru.practicum.stats.dto.EndpointHitDto;
 import ru.practicum.stats.dto.ViewStatsDto;
@@ -13,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Component
 public class StatsServiceClient extends BaseClient {
 
     public StatsServiceClient(@Value("${stats-server.url}") String serverUrl) {
@@ -22,7 +20,7 @@ public class StatsServiceClient extends BaseClient {
 
     public ResponseEntity<Object> sendHit(EndpointHitDto dto) {
         log.debug("Forwarding hit: {}", dto);
-        return post("/hit", dto);
+        return post("/hit", dto, Object.class);
     }
 
     public ResponseEntity<List<ViewStatsDto>> getStats(String start,
@@ -43,8 +41,6 @@ public class StatsServiceClient extends BaseClient {
             }
         }
 
-        log.debug("Request to stats-server: {}", url);
-
         ResponseEntity<ViewStatsDto[]> response =
                 get(url.toString(), params, ViewStatsDto[].class);
 
@@ -52,5 +48,4 @@ public class StatsServiceClient extends BaseClient {
                 .status(response.getStatusCode())
                 .body(response.getBody() != null ? List.of(response.getBody()) : List.of());
     }
-
 }

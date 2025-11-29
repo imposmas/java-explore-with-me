@@ -22,24 +22,13 @@ services:
       postgres-stats:
         condition: service_healthy
     ports:
-      - "9091:9091"
+      - "9090:9090"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-stats:5432/stats
       SPRING_DATASOURCE_USERNAME: stats
       SPRING_DATASOURCE_PASSWORD: stats
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9091/actuator/health || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:9090/actuator/health || exit 1"]
       interval: 13s
       timeout: 5s
       retries: 10
-
-  ewm-stats-client:
-    build: ./ewm-stats/ewm-stats-client
-    container_name: ewm-stats-client
-    depends_on:
-      ewm-stats-server:
-        condition: service_healthy
-    ports:
-      - "9090:9090"
-    environment:
-      STATS_SERVER_URL: http://ewm-stats-server:9091
