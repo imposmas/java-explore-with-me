@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -35,6 +36,12 @@ public class ExceptionControllerAdvice {
                 new ErrorResponse("BAD_REQUEST", "VALIDATION_ERROR", ex.getMessage()),
                 HttpStatus.BAD_REQUEST
         );
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponse> handleMissingParams(MissingServletRequestParameterException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse("BAD_REQUEST", "MISSING_REQUEST_PARAMETER", ex.getMessage()));
     }
 
     /**
