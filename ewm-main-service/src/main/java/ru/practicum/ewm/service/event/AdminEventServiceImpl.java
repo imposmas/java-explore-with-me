@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.common.exceptions.BadRequestException;
 import ru.practicum.ewm.common.exceptions.ConflictException;
 import ru.practicum.ewm.common.exceptions.NotFoundException;
@@ -109,13 +110,13 @@ public class AdminEventServiceImpl implements AdminEventService {
      * Admin can change all fields, publish event or reject event.
      */
     @Override
+    @Transactional
     public EventFullDto updateEvent(Long eventId, UpdateEventAdminRequest dto) {
 
         log.info("ADMIN: Updating event {}, request={}", eventId, dto);
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> {
-                    log.error("Event {} not found", eventId);
                     return new NotFoundException("Event with id=" + eventId + " was not found");
                 });
 
@@ -124,13 +125,11 @@ public class AdminEventServiceImpl implements AdminEventService {
                     LocalDateTime.parse(dto.getEventDate(), DateTimeUtils.FORMATTER);
 
             if (newDate.isBefore(LocalDateTime.now().plusHours(2))) {
-                log.error("New event date {} violates the 2-hour rule", newDate);
                 throw new BadRequestException("Event date must be at least 2 hours later than now");
             }
 
             if (event.getPublishedOn() != null &&
                     newDate.isBefore(event.getPublishedOn().plusHours(1))) {
-                log.error("New date {} is earlier than 1 hour after publish", newDate);
                 throw new BadRequestException("Event date must be at least 1 hour after publish date");
             }
         }

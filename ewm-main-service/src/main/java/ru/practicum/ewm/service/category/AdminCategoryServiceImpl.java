@@ -3,6 +3,7 @@ package ru.practicum.ewm.service.category;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.common.exceptions.ConflictException;
 import ru.practicum.ewm.common.exceptions.NotFoundException;
 import ru.practicum.ewm.dto.category.CategoryDto;
@@ -25,6 +26,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
      * Creates a new category.
      */
     @Override
+    @Transactional
     public CategoryDto create(NewCategoryDto dto) {
         log.info("ADMIN: creating category with name='{}'", dto.getName());
 
@@ -47,6 +49,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
      * Updates category name.
      */
     @Override
+    @Transactional
     public CategoryDto update(Long id, CategoryDto dto) {
         log.info("ADMIN: updating category id={} with name='{}'", id, dto.getName());
 

@@ -61,7 +61,6 @@ public class PrivateEventServiceImpl implements PrivateEventService {
                 LocalDateTime.parse(dto.getEventDate(), DateTimeUtils.FORMATTER);
 
         if (eventDate.isBefore(LocalDateTime.now().plusHours(2))) {
-            log.error("Event date {} is too soon (<2h)", eventDate);
             throw new BadRequestException("Event date must be at least 2 hours later than now");
         }
 
@@ -125,7 +124,6 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         Event event = getOwnedEvent(userId, eventId);
 
         if (event.getState() == EventState.PUBLISHED) {
-            log.error("Cannot update event {}: already published", eventId);
             throw new ConflictException("Only pending or canceled events can be changed");
         }
 
@@ -133,7 +131,6 @@ public class PrivateEventServiceImpl implements PrivateEventService {
             LocalDateTime newDate =
                     LocalDateTime.parse(dto.getEventDate(), DateTimeUtils.FORMATTER);
             if (newDate.isBefore(LocalDateTime.now().plusHours(2))) {
-                log.error("New date {} is too soon (<2h)", newDate);
                 throw new BadRequestException("Event date must be at least 2 hours later than now");
             }
             event.setEventDate(newDate);
@@ -170,7 +167,6 @@ public class PrivateEventServiceImpl implements PrivateEventService {
                 .orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " was not found"));
 
         if (!event.getInitiator().getId().equals(userId)) {
-            log.error("User {} is not the owner of event {}", userId, eventId);
             throw new ConflictException("User is not initiator of the event");
         }
         return event;

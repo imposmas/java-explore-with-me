@@ -3,6 +3,7 @@ package ru.practicum.ewm.service.request;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.common.exceptions.ConflictException;
 import ru.practicum.ewm.common.exceptions.NotFoundException;
 import ru.practicum.ewm.constants.EventState;
@@ -54,34 +55,30 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
      * Creates a participation request for the given event by the given user.
      * Applies all event constraints (state, duplicates, limits).
      */
+    @Transactional
     @Override
     public ParticipationRequestDto addRequest(Long userId, Long eventId) {
         log.info("Creating participation request: userId={}, eventId={}", userId, eventId);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> {
-                    log.error("User {} not found when creating request", userId);
                     return new NotFoundException("User with id=" + userId + " was not found");
                 });
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> {
-                    log.error("Event {} not found when creating request", eventId);
                     return new NotFoundException("Event with id=" + eventId + " was not found");
                 });
 
         if (event.getInitiator().getId().equals(userId)) {
-            log.error("User {} attempted to join own event {}", userId, eventId);
             throw new ConflictException("Initiator cannot request participation in own event");
         }
 
         if (event.getState() != EventState.PUBLISHED) {
-            log.error("User {} attempted to join unpublished event {}", userId, eventId);
             throw new ConflictException("Cannot participate in unpublished event");
         }
 
         if (requestRepository.existsByRequesterIdAndEventId(userId, eventId)) {
-            log.error("Duplicate request by user {} for event {}", userId, eventId);
             throw new ConflictException("Request already exists");
         }
 
@@ -89,7 +86,6 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
         log.debug("Confirmed requests for event {}: {}", eventId, confirmed);
 
         if (event.getParticipantLimit() > 0 && confirmed >= event.getParticipantLimit()) {
-            log.error("Participant limit reached for event {}", eventId);
             throw new ConflictException("Participant limit reached");
         }
 
@@ -121,7 +117,6 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
 
         ParticipationRequest request = requestRepository.findById(requestId)
                 .orElseThrow(() -> {
-                    log.error("Request {} not found when cancelling", requestId);
                     return new NotFoundException("Request with id=" + requestId + " was not found");
                 });
 

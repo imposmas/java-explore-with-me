@@ -48,7 +48,6 @@ public class PublicCategoryServiceImpl implements PublicCategoryService {
 
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.error("Category {} not found", id);
                     return new NotFoundException("Category with id=" + id + " was not found");
                 });
 

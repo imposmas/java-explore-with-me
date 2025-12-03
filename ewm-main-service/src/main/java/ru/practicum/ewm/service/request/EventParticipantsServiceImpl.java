@@ -39,12 +39,10 @@ public class EventParticipantsServiceImpl implements EventParticipantsService {
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> {
-                    log.error("Event {} not found", eventId);
                     return new NotFoundException("Event with id=" + eventId + " was not found");
                 });
 
         if (!event.getInitiator().getId().equals(userId)) {
-            log.error("User {} is not initiator of event {}", userId, eventId);
             throw new ConflictException("Only event initiator can view participants");
         }
 
@@ -77,12 +75,10 @@ public class EventParticipantsServiceImpl implements EventParticipantsService {
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> {
-                    log.error("Event {} not found", eventId);
                     return new NotFoundException("Event with id=" + eventId + " was not found");
                 });
 
         if (!event.getInitiator().getId().equals(userId)) {
-            log.error("User {} is not initiator of event {}", userId, eventId);
             throw new ConflictException("Only the initiator can update statuses");
         }
 
@@ -98,19 +94,16 @@ public class EventParticipantsServiceImpl implements EventParticipantsService {
         for (ParticipationRequest r : requests) {
 
             if (!r.getEvent().getId().equals(eventId)) {
-                log.error("Request {} does not belong to event {}", r.getId(), eventId);
                 throw new ConflictException("Request does not belong to this event");
             }
 
             if (r.getStatus() != RequestStatus.PENDING) {
-                log.error("Request {} is not in PENDING state", r.getId());
                 throw new ConflictException("Request must have status PENDING");
             }
 
             if (dto.getStatus() == RequestStatus.CONFIRMED) {
 
                 if (limit != 0 && confirmedCount >= limit) {
-                    log.error("Participant limit for event {} has been reached", eventId);
                     throw new ConflictException("Participant limit reached");
                 }
 

@@ -65,7 +65,6 @@ public class PublicCompilationServiceImpl implements PublicCompilationService {
 
         Compilation comp = compilationRepository.findById(compId)
                 .orElseThrow(() -> {
-                    log.error("Compilation {} not found", compId);
                     return new NotFoundException("Compilation with id=" + compId + " was not found");
                 });
 

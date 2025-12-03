@@ -3,6 +3,7 @@ package ru.practicum.ewm.service.compilation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.common.exceptions.NotFoundException;
 import ru.practicum.ewm.constants.RequestStatus;
 import ru.practicum.ewm.dto.compilation.CompilationDto;
@@ -39,6 +40,7 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
      * Title is required, pinned defaults to false, events may be empty.
      */
     @Override
+    @Transactional
     public CompilationDto createCompilation(NewCompilationDto dto) {
 
         log.info("ADMIN: Creating compilation with title='{}'", dto.getTitle());
@@ -79,6 +81,7 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
      * Allows updating title, pinned status and event set.
      */
     @Override
+    @Transactional
     public CompilationDto updateCompilation(Long compId, UpdateCompilationRequest dto) {
 
         log.info("ADMIN: Updating compilation id={}", compId);

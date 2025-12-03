@@ -32,7 +32,6 @@ public class AdminUserServiceImpl implements AdminUserService {
         log.debug("ADMIN: Creating user with email={}", dto.getEmail());
 
         if (userRepository.existsByEmail(dto.getEmail())) {
-            log.error("ADMIN: Email '{}' already exists", dto.getEmail());
             throw new ConflictException("Email must be unique");
         }
 
@@ -51,7 +50,6 @@ public class AdminUserServiceImpl implements AdminUserService {
         log.debug("ADMIN: Attempting to delete user {}", id);
 
         if (!userRepository.existsById(id)) {
-            log.error("ADMIN: User {} not found", id);
             throw new NotFoundException("User with id=" + id + " was not found");
         }
 
