@@ -1,93 +1,97 @@
-# 📘 Explore With Me — Statistics Service
+# Explore With Me - Main & Stats Services
 
-На данном этапе реализован **сервис статистики**, который сохраняет обращения к API и позволяет получать агрегированную статистику по посещениям.
+## Overview
+Explore With Me is a two-module application consisting of:
+- **ewm-main-service** — manages events, categories, users, compilations, participation requests.
+- **ewm-stats-service** — collects and provides view statistics for events.
 
----
+Both services run separately and each uses its own PostgreSQL database.
 
-## 📡 API спецификация
+## Modules
 
-| Метод | Endpoint | Описание |
-|--------|----------|----------|
-| `POST` | `/hit` | Сохранение информации о запросе |
-| `GET`  | `/stats` | Получение статистики за период |
+### 1. ewm-main-service
+Handles:
+- Public event search
+- User event management
+- Participation request flow
+- Admin event moderation
+- Categories
+- Compilations
 
-📄 Полная спецификация: **ewm-stats-service-spec.json**
+### 2. ewm-stats-service
+Handles:
+- Saving endpoint hits
+- Aggregating view statistics
+- Querying view counts for events
 
----
+## Swagger Documentation
 
-## 🗃️ База данных
+### Main Service Swagger
+[ewm-main-service-spec.json](./ewm-main-service-spec.json)
 
-| Таблица | Назначение |
-|---------|------------|
-| `endpoint_hit` | Хранение записей о запросах |
-
-Используется PostgreSQL (Docker).
-
----
-
-Ожидаемые сервисы:
-
-| Сервис | Порт      |
-|--------|-----------|
-| ewm-stats-server | 9090      |
-| postgres-stats | 6541:5432 |
-
----
-
-## 🧪 Примеры запросов
-
-### 1️⃣ Добавление записи (POST /hit)
-
-```http
-POST http://localhost:9090/hit
-Content-Type: application/json
-
-{
-  "app": "ewm-main-service",
-  "uri": "/events/1",
-  "ip": "192.168.0.10",
-  "timestamp": "2025-01-30 12:00:00"
-}
-```
-
-### 2️⃣ Получение статистики
-
-```
-GET http://localhost:9090/stats?start=2025-01-01%2000:00:00&end=2025-12-31%2023:59:59
-```
-
-📌 Ответ:
-
-```json
-[
-  {
-    "app": "ewm-main-service",
-    "uri": "/events/1",
-    "hits": 5
-  }
-]
-```
+### Stats Service Swagger
+[ewm-stat-service-spec.json](./ewm-stat-service-spec.json)
 
 ---
 
-## 🚦 Валидация запроса
+## Database Schema
 
-Входные DTO проверяются **на клиенте**:
+### Main Service DB (`ewm`)
 
-| Поле | Правила |
-|------|---------|
-| `app`, `uri`, `ip` | `@NotBlank` |
-| `timestamp` | `@NotNull`, формат строго `yyyy-MM-dd HH:mm:ss` |
+- **users**: user accounts  
+- **categories**: event categories  
+- **locations**: coordinates for events  
+- **events**: main event entity  
+- **compilations**: event collections  
+- **compilation_events**: many-to-many link  
+- **participation_requests**: event participation requests  
 
-📌 Невалидный запрос — 400 BAD_REQUEST:
+### Stats Service DB (`stats`)
 
-```json
-{
-  "status": "BAD_REQUEST",
-  "errorCode": "VALIDATION_ERROR",
-  "message": "Validation failed",
-  "errors": {
-    "ip": "ip must not be blank"
-  }
-}
+- **endpoint_hits**: raw hits  
+- **stats_view**: aggregated views  
+
+![Main Service DB structure](db-main-service.png)
+
+---
+
+## Running with Docker Compose
+
+The system uses two PostgreSQL containers and two service containers.
+
+To start all:
+
+```bash
+docker-compose up --build
 ```
+
+Services:
+- Main service → http://localhost:8080
+- Stats service → http://localhost:9090
+- Postgres main → localhost:6542  
+- Postgres stats → localhost:6541
+
+---
+
+## Repository Structure
+
+```
+ewm-main-service/
+ewm-stats/
+docker-compose.yml
+README.md
+```
+
+---
+
+## Technologies
+- Java 21
+- Spring Boot 3
+- JPA/Hibernate
+- PostgreSQL 15
+- Docker & Docker Compose
+- Lombok
+- RestTemplate client communication
+- Multi-module Maven project
+
+---
