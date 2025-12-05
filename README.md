@@ -1,5 +1,9 @@
 # Explore With Me — Main, Stats & Comments Feature
 
+## Waiting Pull Request
+https://github.com/imposmas/java-explore-with-me/pull/3 
+
+---
 ## Overview
 Explore With Me is a multi-module application consisting of:
 - **ewm-main-service** — manages events, categories, users, compilations, participation requests, and comments.
