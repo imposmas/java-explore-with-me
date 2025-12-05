@@ -106,6 +106,21 @@ public class ExceptionControllerAdvice {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
+    @ExceptionHandler(NotAuthorizedException.class)
+    public ResponseEntity<ApiError> handleDataIntegrityViolation(NotAuthorizedException e) {
+        log.error("Integrity constraint violation", e);
+
+        ApiError error = ApiError.builder()
+                .status(HttpStatus.UNAUTHORIZED.name())
+                .reason("User is not authorized to perform operation")
+                .message(e.getMessage())
+                .errors(List.of(e.toString()))
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<ApiError> handleUnexpected(Throwable e) {
         log.error("Unexpected error", e);
